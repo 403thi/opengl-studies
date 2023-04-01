@@ -22,46 +22,6 @@ void processInput(GLFWwindow *window);
 float x = 0.0f;
 float y = 0.0f;
 
-unsigned int compileShader(unsigned int shaderType, string &shaderSource)
-{
-    unsigned int shaderId = glCreateShader(shaderType);
-    const char *source = shaderSource.c_str();
-    glShaderSource(shaderId, 1, &source, NULL);
-    glCompileShader(shaderId);
-
-    int success;
-    char infoLog[512];
-    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
-    if(!success)
-    {
-        glGetShaderInfoLog(shaderId, 512, NULL, infoLog);
-        cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << endl;
-    }
-    return shaderId;
-}
-
-unsigned int createShader(string &vertexShader, string &fragmentShader)
-{
-    unsigned int vs = compileShader(GL_VERTEX_SHADER, vertexShader);
-    unsigned int fs = compileShader(GL_FRAGMENT_SHADER, fragmentShader);
-    unsigned int program = glCreateProgram();
-    glAttachShader(program, vs);
-    glAttachShader(program, fs);
-    glLinkProgram(program);
-
-    int success;
-    char infoLog[512];
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-    if(!success) {
-        glGetProgramInfoLog(program, 512, NULL, infoLog);
-        cout << "ERROR::SHADER::LINK_FAILED\n" << infoLog << endl;
-    }
-    glDeleteShader(vs);
-    glDeleteShader(fs);
-    return program;
-    
-}
-
 int main(void)
 {
 
