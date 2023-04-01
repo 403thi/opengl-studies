@@ -1,4 +1,4 @@
-all: compile
+all: compile run
 
 compile:
 	g++ -c main.cpp include/glad/glad.c -I include
