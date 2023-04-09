@@ -132,13 +132,22 @@ int main(void)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
+    glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
 
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::translate(modelMatrix, cubePositions[0]);
 
-    glm::mat4 viewMatrix = glm::mat4(1.0f);
-    viewMatrix = glm::translate(viewMatrix, glm::vec3(-1.2f, 0.2f, -5.0f));
-    viewMatrix = glm::rotate(viewMatrix, glm::radians(25.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+    glm::mat4 viewMatrix;
+    viewMatrix = glm::lookAt(
+        glm::vec3(0.0f, 0.0f, 3.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f)
+    );
 
     glm::mat4 projectionMatrix = glm::mat4(1.0f);
     projectionMatrix = glm::perspective(glm::radians(90.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
@@ -149,6 +158,8 @@ int main(void)
 
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
     glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+
+    const float radius = 10.0f;
 
     while (!glfwWindowShouldClose(window)) {
         x = 0;
@@ -161,7 +172,15 @@ int main(void)
         modelMatrix = glm::rotate(modelMatrix, glm::radians(50.0f * x), glm::vec3(0.0f, 1.0f, 0.0f));
         modelMatrix = glm::rotate(modelMatrix, glm::radians(50.0f * y), glm::vec3(1.0f, 0.0f, 0.0f));
 
-        viewMatrix = glm::translate(viewMatrix, glm::vec3(0.0f, 0.0f, 0.002f));
+        // viewMatrix = glm::translate(viewMatrix, glm::vec3(0.0f, 0.0f, 0.002f));
+        float camX = sin(glfwGetTime()) * radius;
+        float camZ = cos(glfwGetTime()) * radius;
+        viewMatrix = glm::lookAt(
+            glm::vec3(camX, 0.0f, camZ),
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.0f, 1.0f, 0.0f)
+        );
+
         glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 
         glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
